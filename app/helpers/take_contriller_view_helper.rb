@@ -1,0 +1,2 @@
+module TakeContrillerViewHelper
+end
