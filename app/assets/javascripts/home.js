@@ -11,16 +11,14 @@ function getLocation() {
 function showPosition(position) {
     var latlon = position.coords.latitude+","+position.coords.longitude;
     var heading = 0
-    for (i=1; i<=4; i++)
-    {
+   
         var img_url = "http://maps.googleapis.com/maps/api/streetview?size=600x300&location="
-        +latlon+"&heading="+heading+"&pitch=-0.76&sensor=false";
-        var ElementById = "streetView"+i
-        document.getElementById(ElementById).innerHTML = "<img id='img"+i+"'name='img"+i+"'src='"+img_url+"'>";
+        +latlon+"&pitch=-0.76&sensor=false";
+        saveImg(img_url);
 
-        heading = heading + 100;
-    }
-  
+        // var ElementById = "streetView"+i
+        // document.getElementById(ElementById).innerHTML = "<img id='img"+i+"'name='img"+i+"'src='"+img_url+"'>";
+        // heading = heading + 100;
 }
 
 function showError(error) {
@@ -39,3 +37,15 @@ function showError(error) {
             break;
     }
 }
+
+function saveImg(img_url){
+  $.post("/positions/save_img",{suggest:img_url},function(result){
+    // $("span").html(result);
+    alert("Location")
+  });
+}
+
+
+
+
+

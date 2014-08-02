@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
 
  get 'home' => 'home#index'
+ post 'positions/save_img' => 'positions#save_img'
+ get 'home/show' => 'home#show_imgs'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
