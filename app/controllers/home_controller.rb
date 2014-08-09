@@ -4,7 +4,7 @@ class HomeController < ApplicationController
         render "index"
     end
 
-    def show_imgs
-    	@allImages = Position.all
+    def test
+    	render "test"
     end
 end

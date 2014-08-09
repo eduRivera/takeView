@@ -1,3 +1,33 @@
-// Place all the styles related to the positions controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+#container{
+	position:relative;
+    width: 100%;
+    height: 100%;
+}
+
+#map-canvas {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+  }
+#mini-map{
+	position:absolute;
+	top:450px;
+	left: 30px;
+	height:80px;
+	width:180px;
+	transition: width 2s, height 2s, transform 2s;
+}
+
+.image-mini-map{
+	 margin: 0;
+     padding: 0;
+     height: 100%;
+}
+.next-point{
+	position:absolute;
+	top:350px;
+	left: 30px;
+	height:80px;
+	width:180px;
+}
+
