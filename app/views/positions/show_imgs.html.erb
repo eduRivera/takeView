@@ -7,9 +7,18 @@
 </head>
 <body>
 	<div id="container">
-		<div id="map-canvas"></div>
-		<div id="mini-map"></div>
-		<button class= "next-point">NEXT POINT</button>
+		<div class = "container-options">
+			<div class = "icon"><img class = "image-photo"id="drag1" src="/assets/photo.png" draggable="true" ondragstart="drag(event)"></div>
+			<div class = "icon"><div class = "image-comment"></div></div>
+			<div class = "icon"><div class = "image-music"></div></div>
+			<div></div>
+		</div>
+		<div class = "container-map">
+			<div id="map-canvas"></div>
+			<div id="mini-map"></div>
+			<button class= "next-point">NEXT POINT</button>
+			<div class = "drop-box" id ="dropBox"ondrop="drop(event)" ondragover="allowDrop(event) "></div>
+		</div>
 	</div>
 </body>
 </html>

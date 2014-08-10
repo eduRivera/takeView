@@ -47,7 +47,6 @@ $(document).ready(function(){
     var map = new google.maps.Map(document.getElementById("mini-map"),myOptions);
     var flightPlanCoordinates = new Array;
     for ( var i = 0 ; i < data.length ; i++){
-      alert(data.length);
        var coord = data[i].url
        coord = coord.split(',');
        var lat = coord[0];
@@ -95,8 +94,39 @@ $(document).ready(function(){
     var myPano = new google.maps.StreetViewPanorama(document.getElementById('map-canvas'),panoramaOptions);
     myPano.setVisible(true);
   }
+
+  //si cliquem els icones siluminara la drop box
   
 });
 
+//funcions pel drag an drop
+  function allowDrop(ev) {
+    ev.preventDefault();
+   
+  }
+
+  function drag(ev) {
+      ev.dataTransfer.setData("Text", ev.target.id);
+      var dropBox = document.getElementById('dropBox');
+      dropBox.classList.add('drop-box-active');
+  }
+  function dragstop(ev) {
+      alert("hola");
+  }
+
+  function drop(ev) {
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("Text");
+      ev.target.appendChild(document.getElementById(data));
+      var dropBox = document.getElementById('dropBox');
+      dropBox.classList.remove('drop-box-active');
+      dropBox.classList.add('drop-box');
+  }
+  document.addEventListener("dragend", function( event ) {
+      // reset the transparency
+      var dropBox = document.getElementById('dropBox');
+      dropBox.classList.remove('drop-box-active');
+      dropBox.classList.add('drop-box');
+  }, false);
 
 
