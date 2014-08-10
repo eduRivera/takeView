@@ -7,7 +7,7 @@ $(document).ready(function(){
       var result = data[0].url
       var result = result.split(',');
       initializeStreetView(result[0], result[1] );
-      showPositionIntoMiniMap(result[0], result[1] );
+      showPositionIntoMiniMap(data);
     },
     error: function() {
       console.log("No entra");
@@ -33,30 +33,35 @@ $(document).ready(function(){
       }
    });
   });
-  function showPositionIntoMiniMap(lat, lon) {
+  function showPositionIntoMiniMap(data) {
+    var coord = data[0].url
+    coord = coord.split(',');
+    var lat = coord[0];
+    var lon = coord[1];
     var myOptions = {
       center: new google.maps.LatLng(lat, lon),
       zoom: 14,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
+
     var map = new google.maps.Map(document.getElementById("mini-map"),myOptions);
- 
-    var myLatlng = new google.maps.LatLng(lat,lon);
-    var myLatlng2 = new google.maps.LatLng(41.539394, 2.112467);
-    var marker = new google.maps.Marker({
-      position: myLatlng,
-      map: map, 
-    });
-    var marker2 = new google.maps.Marker({
-      position: myLatlng2, 
-      map: map, 
-    });
+    var flightPlanCoordinates = new Array;
+    for ( var i = 0 ; i < data.length ; i++){
+      alert(data.length);
+       var coord = data[i].url
+       coord = coord.split(',');
+       var lat = coord[0];
+       var lon = coord[1];
+       var LatLng = new google.maps.LatLng(lat,lon);
+       var LatLng  = new google.maps.Marker({
+       position: LatLng ,
+       map: map, 
+       });
+       flightPlanCoordinates.push(new google.maps.LatLng(lat,lon));
+
+    }
     //hacer que los puntos se unan con una linea roja
-    var flightPlanCoordinates = [
-    new google.maps.LatLng(lat,lon),
-    new google.maps.LatLng(41.539394, 2.112467)
-    ];
-    var flightPath = new google.maps.Polyline({
+        var flightPath = new google.maps.Polyline({
       path: flightPlanCoordinates,
       geodesic: true,
       strokeColor: '#FF0000',
