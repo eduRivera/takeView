@@ -1,13 +1,12 @@
 $(document).ready(function(){
-  var iteratorArray = 0;
+  var divIconClone = $("#containerIcons").clone();
+  var divDropClone = $("#dropBox").clone();
   $.ajax({
     url: "/home/positions",
     dataType: 'json',
     success: function(data) {
-      var result = data[0].url
-      var result = result.split(',');
-      initializeStreetView(result[0], result[1] );
-      showPositionIntoMiniMap(data);
+      initializeStreetView(data, 0);
+      showPositionIntoMiniMap(data, 0);
     },
     error: function() {
       console.log("No entra");
@@ -19,22 +18,20 @@ $(document).ready(function(){
       url: "/home/positions",
       dataType: 'json',
       success: function(data) {
-        if (data.length == iteratorArray +1){
-          iteratorArray = 0;
-        }else{
-          iteratorArray = iteratorArray +1; 
-        }
-        var result = data[iteratorArray].url;
-        var result = result.split(',');
-        initializeStreetView(result[0], result[1] );
+        
+        var resultIterator = positionOfInterator(data);
+        
+        initializeStreetView(data, resultIterator);
+        showPositionIntoMiniMap(data, resultIterator);
       },
       error: function() {
         console.log("No entra");
       }
    });
   });
-  function showPositionIntoMiniMap(data) {
-    var coord = data[0].url
+  function showPositionIntoMiniMap(data, iteratorArray) {
+    resetIcons(divIconClone, divDropClone)
+    var coord = data[iteratorArray].url
     coord = coord.split(',');
     var lat = coord[0];
     var lon = coord[1];
@@ -43,24 +40,39 @@ $(document).ready(function(){
       zoom: 14,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
-
     var map = new google.maps.Map(document.getElementById("mini-map"),myOptions);
+    
     var flightPlanCoordinates = new Array;
+    //per definir el color i la forma dels punts del mapa
+
     for ( var i = 0 ; i < data.length ; i++){
+      //funcio per escollir el tipus de point del mini map
+       var pinImage = typeOfPointMiniMap(i, iteratorArray);
        var coord = data[i].url
        coord = coord.split(',');
        var lat = coord[0];
        var lon = coord[1];
        var LatLng = new google.maps.LatLng(lat,lon);
-       var LatLng  = new google.maps.Marker({
+       var marker = new google.maps.Marker({
        position: LatLng ,
-       map: map, 
+       icon: pinImage,
+       map: map,
+       myLatLon: [lat, lon],
+       coord: data,
+       iteratorArray: i
+       });
+        
+       google.maps.event.addListener(marker, 'click', function() {
+        changeInteratorWhenClickOnPointOfMiniMap(this.iteratorArray);
+        initializeStreetView(this.coord, this.iteratorArray );
+        showPositionIntoMiniMap(this.coord, this.iteratorArray );
+
        });
        flightPlanCoordinates.push(new google.maps.LatLng(lat,lon));
 
     }
     //hacer que los puntos se unan con una linea roja
-        var flightPath = new google.maps.Polyline({
+      var flightPath = new google.maps.Polyline({
       path: flightPlanCoordinates,
       geodesic: true,
       strokeColor: '#FF0000',
@@ -77,11 +89,35 @@ $(document).ready(function(){
     });
     google.maps.event.addListener(map, 'mouseout', function() {
       miniMap.style['width'] = '180px';
-      miniMap.style['height'] = '80px';
+      miniMap.style['height'] = '120px';
     });
+    
   }
 
-  function initializeStreetView(lat, lon) {
+  
+
+});
+//******************************DOCUMENT.READY END*******************************************
+//variable globales
+var typeOfPopUp = ""  //para poder eliminar correctamente el addevelistener necessito de una variable global para no tener que passar a la funcion un atributo
+var iteratorArray = 0;
+
+
+function positionOfInterator(data){
+  if (data.length == iteratorArray +1){
+      return iteratorArray = 0;
+  }else{
+      return iteratorArray = iteratorArray+1; 
+  }
+}
+function changeInteratorWhenClickOnPointOfMiniMap(newIterator){
+  iteratorArray = newIterator;
+}
+function initializeStreetView(data, iteratorArray) {
+    var coord = data[iteratorArray].url
+    coord = coord.split(',');
+    var lat = coord[0];
+    var lon = coord[1];
     var bryantPark = new google.maps.LatLng(lat, lon);
     var panoramaOptions = {
       position: bryantPark,
@@ -95,32 +131,58 @@ $(document).ready(function(){
     myPano.setVisible(true);
   }
 
-  //si cliquem els icones siluminara la drop box
-  
-});
-
 //funcions pel drag an drop
-  function allowDrop(ev) {
+   function allowDrop(ev) {
     ev.preventDefault();
    
   }
-
   function drag(ev) {
       ev.dataTransfer.setData("Text", ev.target.id);
       var dropBox = document.getElementById('dropBox');
       dropBox.classList.add('drop-box-active');
   }
-  function dragstop(ev) {
-      alert("hola");
-  }
-
   function drop(ev) {
       ev.preventDefault();
       var data = ev.dataTransfer.getData("Text");
-      ev.target.appendChild(document.getElementById(data));
+
+      var elementDrop = ev.target.appendChild(document.getElementById(data));
+      typeOfPopUp = whatIconIs(elementDrop.id);
+      openPopUp();
+      //activem el box on es fara el drop
       var dropBox = document.getElementById('dropBox');
       dropBox.classList.remove('drop-box-active');
       dropBox.classList.add('drop-box');
+
+      elementDrop.classList.add('image-drop');
+
+      //afegim un eventListener que al fer click sobre licona que ja s'ha fet drop obri un altre cop el pop up
+      document.getElementById(elementDrop.id).addEventListener("click", openPopUp);
+  }
+  function dropInitial(ev) {
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("Text");
+      var elementDrop = ev.target.appendChild(document.getElementById(data));
+      //activem el box on es fara el drop
+      var dropBox = document.getElementById('dropBox');
+      dropBox.classList.remove('drop-box-active');
+      dropBox.classList.add('drop-box');
+
+      elementDrop.classList.remove('image-drop');
+      //fem un remove del eventListener perque quan fagin un click quan licona torna a estar a la seva posicio inicial no surti el popup
+      document.getElementById(elementDrop.id).removeEventListener("click", openPopUp);
+  }
+  function whatIconIs(element){
+    if(element == "drag1"){
+      return "#openModalDrag1"
+    }else if (element == "drag2"){
+      return  "#openModalDrag2"
+    }else if (element == "drag3"){
+      return  "#openModalDrag3"
+    }
+  }
+  function openPopUp(){
+    window.open(typeOfPopUp,"_self");
+    
   }
   document.addEventListener("dragend", function( event ) {
       // reset the transparency
@@ -129,4 +191,22 @@ $(document).ready(function(){
       dropBox.classList.add('drop-box');
   }, false);
 
+  function typeOfPointMiniMap(iteratorPoints, iteratorArray){
+    var pinColor = "";
+     if( iteratorPoints == iteratorArray ){
+      pinColor = "6BC29D";
+    }else {
+      pinColor = "CA5243";
+    }
+    var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0,0),
+        new google.maps.Point(10, 34));
+    return pinImage;
+  }
+
+  function resetIcons(iconClone, dropBoxClone){
+    $("#containerIcons").replaceWith(iconClone.clone());
+    $("#dropBox").replaceWith(dropBoxClone.clone());
+  }
 

@@ -7,18 +7,26 @@
 </head>
 <body>
 	<div id="container">
-		<div class = "container-options">
-			<div class = "icon"><img class = "image-photo"id="drag1" src="/assets/photo.png" draggable="true" ondragstart="drag(event)"></div>
-			<div class = "icon"><div class = "image-comment"></div></div>
-			<div class = "icon"><div class = "image-music"></div></div>
-			<div></div>
+		<div id = "containerIcons" class = "container-options" ondrop="dropInitial(event)" ondragover="allowDrop(event)">
+			<div class = "icon">
+				<img class = "image image-photo"id="drag1" src="/assets/photo.png" draggable="true" ondragstart="drag(event)">
+			</div>
+			<div class = "icon" >
+				<img class = "image image-comment" id="drag2" src="/assets/comment.png" draggable="true" ondragstart="drag(event)">
+			</div>
+			<div class = "icon">
+				<img class = "image image-music" id="drag3" src="/assets/music.png" draggable="true" ondragstart="drag(event)">
+			</div>
 		</div>
-		<div class = "container-map">
+		<div class = "container-map" >
 			<div id="map-canvas"></div>
 			<div id="mini-map"></div>
 			<button class= "next-point">NEXT POINT</button>
 			<div class = "drop-box" id ="dropBox"ondrop="drop(event)" ondragover="allowDrop(event) "></div>
 		</div>
 	</div>
+<!-- ************************************ POP UPS *************************************** -->
+	<%= render :partial => "form_popups.html" %>
+<!-- ************************************ POP UPS *************************************** -->
 </body>
 </html>
